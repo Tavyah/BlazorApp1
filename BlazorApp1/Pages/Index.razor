@@ -36,6 +36,9 @@ Finn to like ikoner for å vinne! Klarer du dette? Tviler...
 	<div class="row">
 		<h2>Tid: @TimeDisplay</h2>
 	</div>
+	<div class="row">
+		<button @onclick="@(() => StartTimer())" type="button" class="btn btn-outline-dark">Start spillet!</button>
+	</div>
 </div>
 
 @code {
@@ -55,79 +58,49 @@ Finn to like ikoner for å vinne! Klarer du dette? Tviler...
 		new List<string>
 		{
 			"✈","✈",
-		"🚀","🚀",
-		"🚂","🚂",
-		"🚜","🚜",
-		"🚲","🚲",
-		"🚑","🚑",
-		"🚓","🚓",
-		"🚒","🚒"
+			"🚀","🚀",
+			"🚂","🚂",
+			"🚜","🚜",
+			"🚲","🚲",
+			"🚑","🚑",
+			"🚓","🚓",
+			"🚒","🚒"
 		},
 		new List<string>
 		{
-		"🌻","🌻",
-		"🥥","🥥",
-		"🌲","🌲",
-		"🥑","🥑",
-		"🍉","🍉",
-		"🍎","🍎",
-		"🍓","🍓",
-		"🌷","🌷"
+			"🌻","🌻",
+			"🥥","🥥",
+			"🌲","🌲",
+			"🥑","🥑",
+			"🍉","🍉",
+			"🍎","🍎",
+			"🍓","🍓",
+			"🌷","🌷"
 		}
 	};
-	
-	
-	/**
-	List<string> emoji1 = new List<string>()
-	{
-		"☀","☀",
-		"❄","❄",
-		"⚡","⚡",
-		"💧","💧",
-		"🔥","🔥",
-		"🌈","🌈",
-		"🌙","🌙",
-		"⭐","⭐"
-	};
-
-	List<string> emoji2 = new List<string>()
-	{
-		"✈","✈",
-		"🚀","🚀",
-		"🚂","🚂",
-		"🚜","🚜",
-		"🚲","🚲",
-		"🚑","🚑",
-		"🚓","🚓",
-		"🚒","🚒"
-	};
-
-	List<string> emoji3 = new List<string>()
-	{
-		"🌻","🌻",
-		"🥥","🥥",
-		"🌲","🌲",
-		"🥑","🥑",
-		"🍉","🍉",
-		"🍎","🍎",
-		"🍓","🍓",
-		"🌷","🌷"
-	};*/
 
 	List<string> shuffledEmojis = new List<string>()
 	{	};
-	
-	
 
 	int matchesFound = 0;
 	Timer timer;
-	int tenthOfSecondsElapsed = 0;
+	int timerStart = 0;
 	string TimeDisplay;
+	string lastEmojiFound = string.Empty;
 
-	protected override void OnInitialized()
+	/**protected override void OnInitialized()
 	{
-		timer = new Timer(100);
+		timer = new Timer(1000);
 		timer.Elapsed += Timer_Tick;
+		timer.Enabled = true;
+		SetUpGame();
+	}*/
+
+	private void StartTimer()
+	{
+		timer = new Timer(1000);
+		timer.Elapsed += Timer_Tick;
+		timer.Start();
 		SetUpGame();
 	}
 
@@ -135,23 +108,23 @@ Finn to like ikoner for å vinne! Klarer du dette? Tviler...
 	{
 		Random random = new Random();
 		int randomNumber = random.Next(0, 3);
-		Console.WriteLine("Random nummer: " + randomNumber);
-		
+		//Console.WriteLine("Random nummer: " + randomNumber);
+
 		shuffledEmojis = listWithEmojiLists[randomNumber]
 			.OrderBy(item => random.Next())
 			.ToList();
-		matchesFound = 0;
-		tenthOfSecondsElapsed = 0;
-	}
 
-	string lastEmojiFound = string.Empty;
+		matchesFound = 0;
+
+		timerStart = 20;
+	}
 
 	private void ButtonClick(string icon)
 	{
 		if(lastEmojiFound == string.Empty)
 		{
 			lastEmojiFound = icon;
-			timer.Start();
+			//timer.Start();
 		}
 		else if(lastEmojiFound == icon)
 		{
@@ -167,7 +140,7 @@ Finn to like ikoner for å vinne! Klarer du dette? Tviler...
 				timer.Stop();
 				TimeDisplay += " - Spill igjen?";
 				//restarter gamet
-				SetUpGame();
+				//SetUpGame();
 			}
 		}
 		else
@@ -181,9 +154,19 @@ Finn to like ikoner for å vinne! Klarer du dette? Tviler...
 	{
 		InvokeAsync(() =>
 		{
-			tenthOfSecondsElapsed++;
-			TimeDisplay = (tenthOfSecondsElapsed / 10F)
-			.ToString("0.0 sek");
+		/**tenthOfSecondsElapsed++;
+		TimeDisplay = (tenthOfSecondsElapsed / 10F)
+		.ToString("0.0 sek");*/
+			if(timerStart > 0)
+			{
+				timerStart -= 1;
+				TimeDisplay = (timerStart).ToString("0.0 sek");
+			}
+			else
+			{
+				timer.Enabled = false;
+				//knapp for å starte på nytt her..
+			}
 			StateHasChanged();
 		}
 		);
