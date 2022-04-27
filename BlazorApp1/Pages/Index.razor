@@ -1,10 +1,11 @@
 ﻿@page "/"
+@using System.Timers
 
 <PageTitle>Index</PageTitle>
 
 <h1>TSD2490 - Oblig1</h1>
 
-MatchGame!!!
+Finn to like ikoner for å vinne! Klarer du dette? Tviler...
 
 <style>
 	.container {
@@ -29,6 +30,12 @@ MatchGame!!!
 			</div>
 		}
 	</div>
+	<div class="row">
+		<h2>Ikoner funnet: @matchesFound</h2>
+	</div>
+	<div class="row">
+		<h2>Tid: @TimeDisplay</h2>
+	</div>
 </div>
 
 @code {
@@ -48,9 +55,15 @@ MatchGame!!!
 	{
 
 	};
+	int matchesFound = 0;
+	Timer timer;
+	int tenthOfSecondsElapsed = 0;
+	string TimeDisplay;
 
 	protected override void OnInitialized()
 	{
+		timer = new Timer(100);
+		timer.Elapsed += Timer_Tick;
 		SetUpGame();
 	}
 
@@ -60,6 +73,8 @@ MatchGame!!!
 		shuffledAnimals = animalEmoji
 			.OrderBy(item => random.Next())
 			.ToList();
+		matchesFound = 0;
+		tenthOfSecondsElapsed = 0;
 	}
 
 	string lastAnimalFound = string.Empty;
@@ -69,6 +84,7 @@ MatchGame!!!
 		if(lastAnimalFound == string.Empty)
 		{
 			lastAnimalFound = animal;
+			timer.Start();
 		}
 		else if(lastAnimalFound == animal)
 		{
@@ -77,11 +93,33 @@ MatchGame!!!
 			shuffledAnimals = shuffledAnimals
 				.Select(a => a.Replace(animal, string.Empty))
 				.ToList();
+
+			matchesFound++;
+			if(matchesFound == 8)
+			{
+				timer.Stop();
+				TimeDisplay += " - Spill igjen?";
+				//restarter gamet
+				SetUpGame();
+			}
 		}
 		else
 		{
 			lastAnimalFound = string.Empty;
 		}
+
+	}
+
+	private void Timer_Tick(Object source, ElapsedEventArgs e)
+	{
+		InvokeAsync(() =>
+		{
+			tenthOfSecondsElapsed++;
+			TimeDisplay = (tenthOfSecondsElapsed / 10F)
+			.ToString("0.0 sek");
+			StateHasChanged();
+		}
+		);
 
 	}
 }
