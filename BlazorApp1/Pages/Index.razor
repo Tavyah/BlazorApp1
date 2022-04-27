@@ -21,11 +21,11 @@ Finn to like ikoner for å vinne! Klarer du dette? Tviler...
 
 <div class="container">
 	<div class="row">
-		@foreach (var animal in shuffledAnimals)
+		@foreach (var icon in shuffledEmojis)
 		{
 			<div class="col-3">
-				<button @onclick="@(() => ButtonClick(animal))" type="button" class="btn btn-outline-dark">
-					<h1>@animal</h1>
+				<button @onclick="@(() => ButtonClick(icon))" type="button" class="btn btn-outline-dark">
+					<h1>@icon</h1>
 				</button>
 			</div>
 		}
@@ -39,7 +39,46 @@ Finn to like ikoner for å vinne! Klarer du dette? Tviler...
 </div>
 
 @code {
-	List<string> animalEmoji = new List<string>()
+	List<List<string>> listWithEmojiLists = new List<List<string>>()
+	{
+		new List<string>
+		{
+			"☀","☀",
+			"❄","❄",
+			"⚡","⚡",
+			"💧","💧",
+			"🔥","🔥",
+			"🌈","🌈",
+			"🌙","🌙",
+			"⭐","⭐"
+		},
+		new List<string>
+		{
+			"✈","✈",
+		"🚀","🚀",
+		"🚂","🚂",
+		"🚜","🚜",
+		"🚲","🚲",
+		"🚑","🚑",
+		"🚓","🚓",
+		"🚒","🚒"
+		},
+		new List<string>
+		{
+		"🌻","🌻",
+		"🥥","🥥",
+		"🌲","🌲",
+		"🥑","🥑",
+		"🍉","🍉",
+		"🍎","🍎",
+		"🍓","🍓",
+		"🌷","🌷"
+		}
+	};
+	
+	
+	/**
+	List<string> emoji1 = new List<string>()
 	{
 		"☀","☀",
 		"❄","❄",
@@ -51,10 +90,35 @@ Finn to like ikoner for å vinne! Klarer du dette? Tviler...
 		"⭐","⭐"
 	};
 
-	List<string> shuffledAnimals = new List<string>()
+	List<string> emoji2 = new List<string>()
 	{
-
+		"✈","✈",
+		"🚀","🚀",
+		"🚂","🚂",
+		"🚜","🚜",
+		"🚲","🚲",
+		"🚑","🚑",
+		"🚓","🚓",
+		"🚒","🚒"
 	};
+
+	List<string> emoji3 = new List<string>()
+	{
+		"🌻","🌻",
+		"🥥","🥥",
+		"🌲","🌲",
+		"🥑","🥑",
+		"🍉","🍉",
+		"🍎","🍎",
+		"🍓","🍓",
+		"🌷","🌷"
+	};*/
+
+	List<string> shuffledEmojis = new List<string>()
+	{	};
+	
+	
+
 	int matchesFound = 0;
 	Timer timer;
 	int tenthOfSecondsElapsed = 0;
@@ -70,28 +134,31 @@ Finn to like ikoner for å vinne! Klarer du dette? Tviler...
 	private void SetUpGame()
 	{
 		Random random = new Random();
-		shuffledAnimals = animalEmoji
+		int randomNumber = random.Next(0, 3);
+		Console.WriteLine("Random nummer: " + randomNumber);
+		
+		shuffledEmojis = listWithEmojiLists[randomNumber]
 			.OrderBy(item => random.Next())
 			.ToList();
 		matchesFound = 0;
 		tenthOfSecondsElapsed = 0;
 	}
 
-	string lastAnimalFound = string.Empty;
+	string lastEmojiFound = string.Empty;
 
-	private void ButtonClick(string animal)
+	private void ButtonClick(string icon)
 	{
-		if(lastAnimalFound == string.Empty)
+		if(lastEmojiFound == string.Empty)
 		{
-			lastAnimalFound = animal;
+			lastEmojiFound = icon;
 			timer.Start();
 		}
-		else if(lastAnimalFound == animal)
+		else if(lastEmojiFound == icon)
 		{
-			lastAnimalFound = string.Empty;
+			lastEmojiFound = string.Empty;
 
-			shuffledAnimals = shuffledAnimals
-				.Select(a => a.Replace(animal, string.Empty))
+			shuffledEmojis = shuffledEmojis
+				.Select(a => a.Replace(icon, string.Empty))
 				.ToList();
 
 			matchesFound++;
@@ -105,7 +172,7 @@ Finn to like ikoner for å vinne! Klarer du dette? Tviler...
 		}
 		else
 		{
-			lastAnimalFound = string.Empty;
+			lastEmojiFound = string.Empty;
 		}
 
 	}
