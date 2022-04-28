@@ -10,6 +10,7 @@
 <style>
 	.container {
 		width: 400px;
+		color: darkgray;
 	}
 
 	button {
@@ -21,24 +22,27 @@
 
 <div class="container">
 	<div class="row">
-		@foreach (var icon in shuffledEmojis)
+		<button @onclick="@(() => StartTimer())" type="button" class="btn btn-outline-dark">@play</button>
+	</div>
+	<div class="row">
+		@for(var iconNumber = 0; iconNumber < shuffledEmojis.Count; iconNumber++)
 		{
+			var icon = shuffledEmojis[iconNumber];
+			var uniqueDescription = $"Button #{iconNumber}";
 			<div class="col-3">
-				<button @onclick="@(() => ButtonClick(icon))" type="button" class="btn btn-outline-dark">
+				<button @onclick="@(() => ButtonClick(icon, uniqueDescription))" type="button" class="btn btn-outline-dark">
 					<h1>@icon</h1>
 				</button>
 			</div>
 		}
 	</div>
 	<div class="row">
-		<h2>Ikoner funnet: @matchesFound</h2>
+		<h2>@icons @matchesFoundString</h2>
 	</div>
 	<div class="row">
-		<h2>Tid: @TimeDisplay</h2>
+		<h2>@time @TimeDisplay</h2>
 	</div>
-	<div class="row">
-		<button @onclick="@(() => StartTimer())" type="button" class="btn btn-outline-dark">Start spillet!</button>
-	</div>
+	
 	<div class="row">
 		<label><h2><strong>@gameWon</strong></h2></label>
 	</div>
@@ -90,7 +94,12 @@
 	int timerStart = 0;
 	string TimeDisplay = "";
 	string lastEmojiFound = string.Empty;
+	string lastDescription = string.Empty;
 	string gameWon = "";
+	string play = "Start spillet!";
+	string time = "";
+	string icons = "";
+	string matchesFoundString = "";
 
 	/**protected override void OnInitialized()
 	{
@@ -109,12 +118,26 @@
 		gameWon = "Du tapte!";
 	}
 
+	private void PlayAgain()
+	{
+		play = "Spill igjen?";
+	}
+
+	private void Playing()
+	{
+		play = "";
+		gameWon = "";
+		time = "Tid: ";
+		icons = "Ikoner funnet: ";
+	}
+
 	private void StartTimer()
 	{
 		timer = new Timer(1000);
 		timer.Elapsed += Timer_Tick;
 		timer.Start();
 		SetUpGame();
+		Playing();
 	}
 
 	private void SetUpGame()
@@ -131,14 +154,14 @@
 		timerStart = 20;
 	}
 
-	private void ButtonClick(string icon)
+	private void ButtonClick(string icon, string iconDescription)
 	{
 		if(lastEmojiFound == string.Empty)
 		{
 			lastEmojiFound = icon;
-			//timer.Start();
+			lastDescription = iconDescription;
 		}
-		else if(lastEmojiFound == icon)
+		else if((lastEmojiFound == icon) && (iconDescription != lastDescription))
 		{
 			lastEmojiFound = string.Empty;
 
@@ -147,6 +170,7 @@
 				.ToList();
 
 			matchesFound++;
+			matchesFoundString = matchesFound.ToString("0");
 			if(matchesFound == 8)
 			{
 				timer.Stop();
@@ -154,6 +178,7 @@
 				//restarter gamet
 				//SetUpGame();
 				YouWon();
+				PlayAgain();
 			}
 		}
 		else
@@ -167,9 +192,6 @@
 	{
 		InvokeAsync(() =>
 		{
-		/**tenthOfSecondsElapsed++;
-		TimeDisplay = (tenthOfSecondsElapsed / 10F)
-		.ToString("0.0 sek");*/
 			if(timerStart > 0)
 			{
 				timerStart -= 1;
@@ -178,7 +200,7 @@
 			else
 			{
 				YouLost();
-				//knapp for å starte på nytt her..
+				PlayAgain();
 			}
 			StateHasChanged();
 		}
