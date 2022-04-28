@@ -5,7 +5,7 @@
 
 <h1>TSD2490 - Oblig1</h1>
 
-Finn to like ikoner for å vinne! Klarer du dette? Tviler...
+<h2>Finn to like ikoner for å vinne!</h2>
 
 <style>
 	.container {
@@ -38,6 +38,9 @@ Finn to like ikoner for å vinne! Klarer du dette? Tviler...
 	</div>
 	<div class="row">
 		<button @onclick="@(() => StartTimer())" type="button" class="btn btn-outline-dark">Start spillet!</button>
+	</div>
+	<div class="row">
+		<label><h2><strong>@gameWon</strong></h2></label>
 	</div>
 </div>
 
@@ -85,8 +88,9 @@ Finn to like ikoner for å vinne! Klarer du dette? Tviler...
 	int matchesFound = 0;
 	Timer timer;
 	int timerStart = 0;
-	string TimeDisplay;
+	string TimeDisplay = "";
 	string lastEmojiFound = string.Empty;
+	string gameWon = "";
 
 	/**protected override void OnInitialized()
 	{
@@ -95,6 +99,15 @@ Finn to like ikoner for å vinne! Klarer du dette? Tviler...
 		timer.Enabled = true;
 		SetUpGame();
 	}*/
+	private void YouWon()
+	{
+		gameWon = "Du vant!";
+	}
+
+	private void YouLost()
+	{
+		gameWon = "Du tapte!";
+	}
 
 	private void StartTimer()
 	{
@@ -108,7 +121,6 @@ Finn to like ikoner for å vinne! Klarer du dette? Tviler...
 	{
 		Random random = new Random();
 		int randomNumber = random.Next(0, 3);
-		//Console.WriteLine("Random nummer: " + randomNumber);
 
 		shuffledEmojis = listWithEmojiLists[randomNumber]
 			.OrderBy(item => random.Next())
@@ -138,9 +150,10 @@ Finn to like ikoner for å vinne! Klarer du dette? Tviler...
 			if(matchesFound == 8)
 			{
 				timer.Stop();
-				TimeDisplay += " - Spill igjen?";
+				//TimeDisplay += " ";
 				//restarter gamet
 				//SetUpGame();
+				YouWon();
 			}
 		}
 		else
@@ -164,7 +177,7 @@ Finn to like ikoner for å vinne! Klarer du dette? Tviler...
 			}
 			else
 			{
-				timer.Enabled = false;
+				YouLost();
 				//knapp for å starte på nytt her..
 			}
 			StateHasChanged();
